@@ -1,6 +1,42 @@
 syntax = "proto3";
 package proto;
 
+option go_package = ".;proto";
+
+message VirtualMachine {
+    string id = 1;
+    string name = 2;
+    string ip_address = 4;
+    string fqdn = 5;
+    string userdata = 6;
+    repeated string tags = 7;
+}
+
+message Project {
+    string id = 1;
+    string name = 2;
+}
+
+enum Status {
+    CREATED = 0;
+    STARTED = 1;
+    UPDATED = 2;
+    STOPPED = 3;
+    CHECKED = 4;
+    DELETED = 5;
+}
+
+message VirtualMachineRequest {
+    Status status = 1;
+    VirtualMachine machine = 2;
+    Project project = 3;
+}
+
+message VirtualMachineResponse {
+    int32 code = 1;
+    string message = 2;
+}
+
 message GetRequest {
     string key = 1;
 }
