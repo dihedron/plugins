@@ -2,36 +2,27 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
+	"log"
 	"os"
 	"os/exec"
+	"strings"
 
-	"github.com/dihedron/plugins/log"
-	"github.com/hashicorp/go-hclog"
+	"github.com/dihedron/plugins/shared"
 	"github.com/hashicorp/go-plugin"
-	"github.com/hashicorp/go-plugin/examples/grpc/shared"
-	"go.uber.org/zap"
 )
 
 func main() {
+	// We don't want to see the plugin logs.
+	log.SetOutput(ioutil.Discard)
 
-	defer zap.L().Sync()
-
-	// create an hclog.Logger
-	logger := hclog.New(&hclog.LoggerOptions{
-		Name:   "plugin",
-		Output: os.Stdout,
-		Level:  hclog.Debug,
-	})
-
-	// start by launching the plugin process (aka the server)
+	// We're a host. Start by launching the plugin process.
 	client := plugin.NewClient(&plugin.ClientConfig{
-		HandshakeConfig: shared.Handshake, // shared.Handshake
-		Plugins:         shared.PluginMap, // shared.PluginMap
-		Cmd:             exec.Command("./plugin/greeter"),
+		HandshakeConfig: shared.Handshake,
+		Plugins:         shared.PluginMap,
+		Cmd:             exec.Command("sh", "-c", os.Getenv("KV_PLUGIN")),
 		AllowedProtocols: []plugin.Protocol{
-			plugin.ProtocolGRPC,
-		},
-		Logger: logger,
+			plugin.ProtocolNetRPC, plugin.ProtocolGRPC},
 	})
 	defer client.Kill()
 
@@ -43,13 +34,13 @@ func main() {
 	}
 
 	// Request the plugin
-	raw, err := rpcClient.Dispense("greeter")
-	if err != nil {
-		log.Fatal(err)
-	}
+	var raw interface{}
 
-	// Request the plugin
-	raw, err := rpcClient.Dispense("kv_grpc")
+	if strings.Contains(os.Getenv("KV_PLUGIN"), "grpc") {
+		raw, err = rpcClient.Dispense("kv_grpc")
+	} else if strings.Contains(os.Getenv("KV_PLUGIN"), "netrpc") {
+		raw, err = rpcClient.Dispense("kv_netrpc")
+	}
 	if err != nil {
 		fmt.Println("Error:", err.Error())
 		os.Exit(1)
