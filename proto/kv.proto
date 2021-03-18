@@ -3,6 +3,7 @@ package proto;
 
 option go_package = ".;proto";
 
+/*
 message VirtualMachine {
     string id = 1;
     string name = 2;
@@ -26,16 +27,24 @@ enum Status {
     DELETED = 5;
 }
 
-message VirtualMachineRequest {
+message EventRequest {
     Status status = 1;
     VirtualMachine machine = 2;
     Project project = 3;
 }
 
-message VirtualMachineResponse {
+message EventReply {
     int32 code = 1;
     string message = 2;
 }
+
+// The greeting service definition.
+service EventHandler {
+  // Handles an event
+  rpc Handle (EventRequest) returns (EventReply) {}
+}
+
+*/
 
 message GetRequest {
     string key = 1;
