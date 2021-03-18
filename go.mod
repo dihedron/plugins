@@ -4,7 +4,6 @@ go 1.16
 
 require (
 	github.com/fatih/color v1.10.0 // indirect
-	github.com/golang/protobuf v1.5.0
 	github.com/hashicorp/go-hclog v0.15.0
 	github.com/hashicorp/go-plugin v1.4.0
 	github.com/hashicorp/yamux v0.0.0-20210316155119-a95892c5f864 // indirect
