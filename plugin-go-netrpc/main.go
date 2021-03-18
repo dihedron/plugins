@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"io/ioutil"
 
+	"github.com/dihedron/plugins/log"
 	"github.com/dihedron/plugins/shared"
 	"github.com/hashicorp/go-plugin"
+	"go.uber.org/zap"
 )
 
 // Here is a real implementation of KV that writes to a local file with
@@ -22,7 +24,11 @@ func (KV) Get(key string) ([]byte, error) {
 }
 
 func main() {
+	defer zap.L().Sync()
+	zap.L().Info("netRPC plugin starting...")
+
 	plugin.Serve(&plugin.ServeConfig{
+		Logger:          log.NewHCLogAdapter(nil),
 		HandshakeConfig: shared.Handshake,
 		Plugins: map[string]plugin.Plugin{
 			"kv_netrpc": &shared.KVPlugin{Impl: &KV{}},
