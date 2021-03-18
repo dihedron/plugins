@@ -31,7 +31,7 @@ func main() {
 		Logger:          log.NewHCLogAdapter(nil),
 		HandshakeConfig: shared.Handshake,
 		Plugins: map[string]plugin.Plugin{
-			"kv_netrpc": &shared.KVPlugin{Impl: &KV{}},
+			"kv_netrpc": &shared.KVNetRPCPlugin{Impl: &KV{}},
 		},
 	})
 }
