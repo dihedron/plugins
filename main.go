@@ -2,22 +2,27 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
-	"log"
 	"os"
 	"os/exec"
 	"strings"
 
+	"github.com/dihedron/plugins/log"
 	"github.com/dihedron/plugins/shared"
 	"github.com/hashicorp/go-plugin"
+	"go.uber.org/zap"
 )
 
 func main() {
+
+	zap.L().Sync()
+	logger := log.NewHCLogAdapter(nil)
+
 	// We don't want to see the plugin logs.
-	log.SetOutput(ioutil.Discard)
+	// log.SetOutput(ioutil.Discard)
 
 	// We're a host. Start by launching the plugin process.
 	client := plugin.NewClient(&plugin.ClientConfig{
+		Logger:          logger,
 		HandshakeConfig: shared.Handshake,
 		Plugins:         shared.PluginMap,
 		Cmd:             exec.Command("sh", "-c", os.Getenv("KV_PLUGIN")),
